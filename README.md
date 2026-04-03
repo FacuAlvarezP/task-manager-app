@@ -1,2 +1,16 @@
-# task-manager-app
-Full-stack task management application with mobile frontend (Flutter) and backend API (Spring Boot). Includes authentication, task management, and database integration.
+# Task Manager App
+
+Full-stack mobile application for task management.
+
+## Tech Stack
+- Backend: Java (Spring Boot)
+- Mobile: Flutter
+- Database: PostgreSQL
+
+## Features (planned)
+- User authentication
+- Task creation and management
+- Task status tracking
+
+## Author
+Facundo Alvarez Pérsico
