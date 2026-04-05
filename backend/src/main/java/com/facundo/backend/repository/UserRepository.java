@@ -1,0 +1,10 @@
+package com.facundo.backend.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.facundo.backend.model.User;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    //UserRepository es el encargado de comunicarse con la base de datos.
+    
+}
