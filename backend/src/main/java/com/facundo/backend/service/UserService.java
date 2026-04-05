@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.facundo.backend.exception.InvalidCredentialsException;
 import com.facundo.backend.exception.UserAlreadyExistsException;
+import com.facundo.backend.exception.UserNotFoundException;
 import com.facundo.backend.model.User;
 import com.facundo.backend.repository.UserRepository;
 
@@ -33,7 +34,7 @@ public class UserService {
 
     public User login(String email, String password) {
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidCredentialsException("Credenciales inválidas"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Credenciales inválidas"));
 
         if (!user.getPassword().equals(password)) {
             throw new InvalidCredentialsException("Credenciales inválidas");
