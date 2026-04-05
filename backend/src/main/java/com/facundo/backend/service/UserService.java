@@ -2,6 +2,7 @@ package com.facundo.backend.service;
 
 import org.springframework.stereotype.Service;
 
+import com.facundo.backend.exception.UserAlreadyExistsException;
 import com.facundo.backend.model.User;
 import com.facundo.backend.repository.UserRepository;
 
@@ -16,9 +17,14 @@ public class UserService {
     }
 
     public User createUser(User user) {
-
+        
+        //Valida que no se duplique el email
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("El email ya está en uso");
+            throw new UserAlreadyExistsException("El email ya está en uso");
+        }
+        //Valida que no se duplique el username
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new UserAlreadyExistsException("El username ya está en uso");
         }
 
         return userRepository.save(user);

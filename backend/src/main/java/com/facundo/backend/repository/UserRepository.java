@@ -8,4 +8,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //UserRepository es el encargado de comunicarse con la base de datos.
     
     boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
 }
