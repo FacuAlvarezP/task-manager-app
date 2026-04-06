@@ -1,5 +1,6 @@
 package com.facundo.backend.service;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.facundo.backend.exception.InvalidCredentialsException;
@@ -13,9 +14,11 @@ public class UserService {
     //UserService sirve para gestionar la logica de negocio (validar datos, evitar duplicados, reglas del sistema).
     
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createUser(User user) {
@@ -28,6 +31,8 @@ public class UserService {
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new UserAlreadyExistsException("El username ya está en uso");
         }
+        //Encriptar password:
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
     }
@@ -36,7 +41,7 @@ public class UserService {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Credenciales inválidas"));
 
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new InvalidCredentialsException("Credenciales inválidas");
         }
 
