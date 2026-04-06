@@ -8,6 +8,7 @@ import com.facundo.backend.exception.UserAlreadyExistsException;
 import com.facundo.backend.exception.UserNotFoundException;
 import com.facundo.backend.model.User;
 import com.facundo.backend.repository.UserRepository;
+import com.facundo.backend.security.JwtUtil;
 
 @Service
 public class UserService {
@@ -15,10 +16,12 @@ public class UserService {
     
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     public User createUser(User user) {
@@ -37,14 +40,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User login(String email, String password) {
+    public String login(String email, String password) {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Credenciales inválidas"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new InvalidCredentialsException("Credenciales inválidas");
         }
-
-        return user;
+        
+        //Generar TOKEN
+        return jwtUtil.generateToken(user.getEmail());
     }
 }
