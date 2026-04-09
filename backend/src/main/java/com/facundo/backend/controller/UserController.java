@@ -32,7 +32,8 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public String profile(Authentication authentication) {
-        return "Usuario logueado: " + authentication.getPrincipal();
+    public User profile(Authentication authentication) {
+        String email = authentication.getPrincipal().toString();
+        return userService.getUserByEmail(email);
     }
 }
