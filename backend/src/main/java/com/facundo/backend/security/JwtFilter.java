@@ -1,9 +1,10 @@
 package com.facundo.backend.security;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -46,6 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String email = jwtUtil.extractEmail(token);
+            String role = jwtUtil.extractRole(token);
 
             if (email == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -53,7 +55,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             UsernamePasswordAuthenticationToken auth = 
-            new UsernamePasswordAuthenticationToken(email, null, new ArrayList<>());
+            new UsernamePasswordAuthenticationToken(email, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 

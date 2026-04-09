@@ -36,6 +36,8 @@ public class UserService {
         }
         //Encriptar password:
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
+        user.setRole("USER"); //Por defecto
 
         return userRepository.save(user);
     }
@@ -49,7 +51,7 @@ public class UserService {
         }
         
         //Generar TOKEN
-        return jwtUtil.generateToken(user.getEmail());
+        return jwtUtil.generateToken(user.getEmail(), user.getRole());
     }
 
     public User getUserByEmail(String email) {

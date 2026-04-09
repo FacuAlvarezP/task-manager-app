@@ -22,6 +22,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) //Desactiva CSRF (para APIs)
         .authorizeHttpRequests(auth -> auth.requestMatchers("/users", "/users/login").permitAll() //Permite users
+        .requestMatchers("/admin/**").hasRole("ADMIN") 
         .anyRequest().authenticated()) //el resto protegido
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); 
 
