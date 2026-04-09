@@ -1,5 +1,7 @@
 package com.facundo.backend.controller;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +29,10 @@ public class UserController {
     @PostMapping("/login")
     public String login(@RequestBody User user) {
         return userService.login(user.getEmail(), user.getPassword());
+    }
+
+    @GetMapping("/profile")
+    public String profile(Authentication authentication) {
+        return "Usuario logueado: " + authentication.getPrincipal();
     }
 }
