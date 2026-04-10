@@ -1,7 +1,7 @@
 package com.facundo.backend.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,9 +32,9 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponseDTO> getTasks(Authentication auth) {
-        String email = auth.getPrincipal().toString();
-        return taskService.getUserTasks(email);
+    public Page<TaskResponseDTO> getTasks(Pageable pageable, Authentication authentication) {
+        String userEmail = authentication.getName();
+        return taskService.getUserTasks(userEmail, pageable);
     }
 
     @PutMapping("/{id}")
