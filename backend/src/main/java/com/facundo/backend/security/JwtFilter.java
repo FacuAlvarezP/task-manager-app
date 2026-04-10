@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         //Permitir endpoints publicos
-        if (path.equals("/users") || path.equals("/users/login")) {
+        if (path.contains("/users")) {
             filterChain.doFilter(request, response);
             return;
         }
