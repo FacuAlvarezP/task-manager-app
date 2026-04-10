@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.facundo.backend.dto.UserRequestDTO;
+import com.facundo.backend.dto.UserResponseDTO;
 import com.facundo.backend.model.User;
 import com.facundo.backend.service.UserService;
 
@@ -22,13 +24,13 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public UserResponseDTO createUser(@RequestBody UserRequestDTO dto) {
+        return userService.createUser(dto);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        return userService.login(user.getEmail(), user.getPassword());
+    public String login(@RequestBody UserRequestDTO dto) {
+        return userService.login(dto);
     }
 
     @GetMapping("/profile")

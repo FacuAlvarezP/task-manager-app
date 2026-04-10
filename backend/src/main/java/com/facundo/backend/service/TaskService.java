@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.facundo.backend.dto.TaskRequestDTO;
+import com.facundo.backend.dto.TaskResponseDTO;
 import com.facundo.backend.model.Task;
 import com.facundo.backend.repository.TaskRepository;
 
@@ -16,16 +18,33 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public Task createTask(Task task, String userEmail) {
+    public TaskResponseDTO createTask(TaskRequestDTO dto, String userEmail) {
+        Task task = new Task();
+        task.setTitle(dto.getTitle());
+        task.setDescription(dto.getDescription());
+        task.setCompleted(dto.getCompleted());
         task.setUserEmail(userEmail);
-        return taskRepository.save(task);
+        Task saved = taskRepository.save(task);
+
+        return new TaskResponseDTO(
+            saved.getId(),
+            saved.getTitle(),
+            saved.getDescription(),
+            saved.getCompleted()
+        );
     }
 
-    public List<Task> getUserTasks(String userEmail) {
-        return taskRepository.findByUserEmail(userEmail);
+    public List<TaskResponseDTO> getUserTasks(String userEmail) {
+        return taskRepository.findByUserEmail(userEmail)
+        .stream().map(task -> new TaskResponseDTO(
+            task.getId(),
+            task.getTitle(),
+            task.getDescription(),
+            task.getCompleted()
+        )).toList();
     }
     
-    public Task updateTask(Long id, Task updatedTask, String userEmail) {
+    public TaskResponseDTO updateTask(Long id, TaskRequestDTO dto, String userEmail) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Tarea no encontrada"));
 
         //Validacion:
@@ -34,11 +53,17 @@ public class TaskService {
         }
         
         //Actualizamos Task:
-        task.setTitle(updatedTask.getTitle());
-        task.setDescription(updatedTask.getDescription());
-        task.setCompleted(updatedTask.getCompleted());
+        task.setTitle(dto.getTitle());
+        task.setDescription(dto.getDescription());
+        task.setCompleted(dto.getCompleted());
+        Task updated = taskRepository.save(task);
 
-        return taskRepository.save(task);
+        return new TaskResponseDTO(
+            updated.getId(),
+            updated.getTitle(),
+            updated.getDescription(),
+            updated.getCompleted()
+        );
     }
     public void deleteTask(Long id, String userEmail) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Tarea no encontrada"));
