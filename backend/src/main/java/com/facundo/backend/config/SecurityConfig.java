@@ -2,6 +2,7 @@ package com.facundo.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,14 +23,15 @@ public class SecurityConfig {
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) //Desactiva CSRF (para APIs)
-        .authorizeHttpRequests(auth -> auth.requestMatchers("/users", "/users/login", "/tasks/**").permitAll() //Permite users
-        .requestMatchers("/admin/**").hasRole("ADMIN") 
-        .anyRequest().authenticated()) //el resto protegido
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); 
+        http.csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/users", "/users/login").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated())
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-
     }
 
     @Bean
