@@ -1,0 +1,98 @@
+.tasks-wrapper {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+/* Header */
+.tasks-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.tasks-header h1 {
+    font-size: 28px;
+}
+
+.tasks-header span {
+    font-size: 14px;
+    color: var(--text-secondary);
+    display: block;
+    margin-top: 2px;
+    font-weight: 400;
+}
+
+/* Formulario nueva tarea */
+.task-form {
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.task-form h2 {
+    font-size: 16px;
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 12px;
+}
+
+.task-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.task-form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.task-form-row .btn-primary {
+    width: auto;
+    white-space: nowrap;
+    padding: 10px 20px;
+}
+
+/* Stats de tareas */
+.tasks-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-chip {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+}
+
+.stat-chip.active {
+    background: var(--accent-glow);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: var(--accent);
+}
+
+/* Lista de tareas */
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tasks-empty {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-muted);
+}
+
+.tasks-empty p:first-child {
+    font-size: 32px;
+    margin-bottom: 8px;
+}

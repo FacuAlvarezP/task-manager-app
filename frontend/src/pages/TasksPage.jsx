@@ -2,33 +2,25 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
 import TaskCard from "../components/TaskCard";
+import "./TasksPage.css";
 
 function TasksPage() {
-  // Lista de tareas que vienen del backend
   const [tasks, setTasks] = useState([]);
-
-  // Campos del formulario para crear tarea
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
-  // Estados de UI
-  const [loading, setLoading] = useState(true);   // cargando la lista inicial
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Traemos el token y la función logout del contexto
   const { token, logout } = useAuth();
 
-  // useEffect se ejecuta cuando el componente se monta (aparece en pantalla)
-  // Es el lugar correcto para hacer llamadas a la API al cargar la página
   useEffect(() => {
     loadTasks();
-  }, []); // El [] significa "ejecutar solo una vez, al montar el componente"
+  }, []);
 
   const loadTasks = async () => {
     try {
       setLoading(true);
       const data = await getTasks(token);
-      // El backend devuelve un objeto paginado, las tareas están en data.content
       setTasks(data.content);
     } catch (err) {
       setError("Error al cargar las tareas");
@@ -38,19 +30,14 @@ function TasksPage() {
   };
 
   const handleCreate = async () => {
-    // Validación básica
     if (!title.trim()) {
       setError("El título es obligatorio");
       return;
     }
-
     try {
       setError("");
       const newTask = await createTask(token, title, description);
-      // Agregamos la tarea nueva al estado local sin recargar todo
-      // Esto hace la UI más rápida
       setTasks([newTask, ...tasks]);
-      // Limpiamos el formulario
       setTitle("");
       setDescription("");
     } catch (err) {
@@ -60,14 +47,11 @@ function TasksPage() {
 
   const handleToggle = async (task) => {
     try {
-      // Enviamos la tarea con el completed invertido
       const updated = await updateTask(token, task.id, {
         title: task.title,
         description: task.description,
         completed: !task.completed,
       });
-
-      // Actualizamos solo esa tarea en el estado local
       setTasks(tasks.map((t) => (t.id === updated.id ? updated : t)));
     } catch (err) {
       setError("Error al actualizar la tarea");
@@ -77,69 +61,88 @@ function TasksPage() {
   const handleDelete = async (id) => {
     try {
       await deleteTask(token, id);
-      // Filtramos la tarea eliminada del estado local
       setTasks(tasks.filter((t) => t.id !== id));
     } catch (err) {
       setError("Error al eliminar la tarea");
     }
   };
 
+  // Contadores para las stats
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((t) => t.completed).length;
+  const pendingTasks = totalTasks - completedTasks;
+
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "24px" }}>
+    <div className="tasks-wrapper">
 
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2>Mis Tareas</h2>
-        <button onClick={logout}>Cerrar sesión</button>
+      <div className="tasks-header">
+        <div>
+          <h1>Mis Tareas</h1>
+          <span>{pendingTasks} pendientes</span>
+        </div>
+        <button className="btn-secondary" onClick={logout}>
+          Cerrar sesión
+        </button>
       </div>
 
-      {/* Formulario nueva tarea */}
-      <div style={{
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        padding: "16px",
-        marginBottom: "24px",
-      }}>
-        <h3 style={{ margin: "0 0 12px 0" }}>Nueva tarea</h3>
-
-        <input
-          placeholder="Título *"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{ display: "block", width: "100%", marginBottom: "8px", padding: "8px", boxSizing: "border-box" }}
-        />
-
-        <input
-          placeholder="Descripción (opcional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          style={{ display: "block", width: "100%", marginBottom: "12px", padding: "8px", boxSizing: "border-box" }}
-        />
-
-        <button onClick={handleCreate}>+ Agregar tarea</button>
-      </div>
-
-      {/* Mensaje de error */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {/* Lista de tareas */}
-      {loading ? (
-        <p>Cargando tareas...</p>
-      ) : tasks.length === 0 ? (
-        <p style={{ color: "#999", textAlign: "center" }}>
-          No tenés tareas todavía. ¡Creá una!
-        </p>
-      ) : (
-        tasks.map((task) => (
-          // key es obligatorio cuando renderizás listas en React
-          // Le dice a React qué elemento es cuál para actualizarlos eficientemente
-          <TaskCard
-            key={task.id}
-            task={task}
-            onToggle={handleToggle}
-            onDelete={handleDelete}
+      {/* Formulario */}
+      <div className="task-form card">
+        <h2>Nueva tarea</h2>
+        <div className="task-form-fields">
+          <input
+            className="input"
+            placeholder="Descripción (opcional)"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
-        ))
+          <div className="task-form-row">
+            <input
+              className="input"
+              placeholder="Título de la tarea *"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+            />
+            <button className="btn-primary" onClick={handleCreate}>
+              + Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      {totalTasks > 0 && (
+        <div className="tasks-stats">
+          <span className="stat-chip active">{totalTasks} total</span>
+          <span className="stat-chip">{pendingTasks} pendientes</span>
+          <span className="stat-chip">{completedTasks} completadas</span>
+        </div>
+      )}
+
+      {error && <p className="msg-error" style={{ marginBottom: "16px" }}>{error}</p>}
+
+      {/* Lista */}
+      {loading ? (
+        <p style={{ textAlign: "center", color: "var(--text-muted)", padding: "40px" }}>
+          Cargando...
+        </p>
+      ) : tasks.length === 0 ? (
+        <div className="tasks-empty">
+          <p>📋</p>
+          <p>No tenés tareas todavía</p>
+        </div>
+      ) : (
+        <div className="tasks-list">
+          {tasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onToggle={handleToggle}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
