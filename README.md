@@ -73,6 +73,7 @@ npm run dev
 La app arranca en `http://localhost:5173`
 
 ## 📁 Estructura del proyecto
+```text
 task-manager-app/
 ├── backend/
 │   └── src/main/java/com/facundo/backend/
@@ -91,6 +92,7 @@ task-manager-app/
         ├── pages/           # Vistas principales
         ├── routes/          # Configuración de navegación
         └── services/        # Llamadas a la API
+```
 
 ## 🔐 Endpoints principales
 
