@@ -6,6 +6,25 @@ const authHeaders = (token) => ({
     Authorization: `Bearer ${token}`, // El backend espera el token así
 });
 
+// Registra un usuario nuevo
+export const register = async (username, email, password) => {
+    const response = await fetch(`${API_URL}/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+    });
+
+    if (!response.ok) {
+        // El backend devuelve un mensaje de error específico, lo leemos
+        const errorData = await response.json();
+        // Lanzamos el mensaje del backend para mostrárselo al usuario
+        throw new Error(errorData.message || "Error al registrarse");
+    }
+
+    return response.json();
+};
+
+// Logea un usuario existente
 export const login = async (email, password) => {
     const response = await fetch(`${API_URL}/users/login`, {
         method: "POST",
