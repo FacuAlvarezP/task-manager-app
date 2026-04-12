@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
 import TaskCard from "../components/TaskCard";
@@ -12,10 +13,21 @@ function TasksPage() {
   const [error, setError] = useState("");
 
   const { token, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadTasks();
   }, []);
+
+  const handleApiError = (err) => {
+    if (err.message === "UNAUTHORIZED") {
+      // Token expirado — deslogueamos y React Router redirige al login
+      logout();
+      navigate("/login");
+      return;
+    }
+    setError(err.message);
+  };
 
   const loadTasks = async () => {
     try {
@@ -23,7 +35,7 @@ function TasksPage() {
       const data = await getTasks(token);
       setTasks(data.content);
     } catch (err) {
-      setError("Error al cargar las tareas");
+      handleApiError(err);
     } finally {
       setLoading(false);
     }
@@ -41,7 +53,7 @@ function TasksPage() {
       setTitle("");
       setDescription("");
     } catch (err) {
-      setError("Error al crear la tarea");
+      handleApiError(err);
     }
   };
 
@@ -54,7 +66,7 @@ function TasksPage() {
       });
       setTasks(tasks.map((t) => (t.id === updated.id ? updated : t)));
     } catch (err) {
-      setError("Error al actualizar la tarea");
+      handleApiError(err);
     }
   };
 
@@ -63,7 +75,7 @@ function TasksPage() {
       await deleteTask(token, id);
       setTasks(tasks.filter((t) => t.id !== id));
     } catch (err) {
-      setError("Error al eliminar la tarea");
+      handleApiError(err);
     }
   };
 

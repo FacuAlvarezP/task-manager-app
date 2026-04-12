@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,19 +50,22 @@ public class JwtFilter extends OncePerRequestFilter {
             String email = jwtUtil.extractEmail(token);
             String role = jwtUtil.extractRole(token);
 
-            if (email == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
-
-            UsernamePasswordAuthenticationToken auth = 
-            new UsernamePasswordAuthenticationToken(email, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+            UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(
+                    email, null,
+                    List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-
+        } catch (ExpiredJwtException e) {
+            // Token expirado — 401 con mensaje específico
+            // El frontend puede distinguir este caso y redirigir al login
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"TOKEN_EXPIRED\"}");
+            return;
         } catch (Exception e) {
-            //Token invalido
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
