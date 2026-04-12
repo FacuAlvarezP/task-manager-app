@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.facundo.backend.dto.UserProfileDTO;
 import com.facundo.backend.dto.UserRequestDTO;
 import com.facundo.backend.dto.UserResponseDTO;
 import com.facundo.backend.model.User;
@@ -34,8 +35,15 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public User profile(Authentication authentication) {
+    public UserProfileDTO profile(Authentication authentication) {
         String email = authentication.getPrincipal().toString();
-        return userService.getUserByEmail(email);
+        User user = userService.getUserByEmail(email);
+        //Devolvemos DTO
+        return new UserProfileDTO(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getRole()
+        );
     }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
@@ -6,20 +6,21 @@ import TaskCard from "../components/TaskCard";
 import "./TasksPage.css";
 
 function TasksPage() {
+  // 1. Estados
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // 2. Contexto y navegación
   const { token, logout } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    loadTasks();
-  }, []);
-
-  const handleApiError = (err) => {
+  // 3. Funciones helper con useCallback — ANTES del useEffect
+  // useCallback memoriza la función para que no se recree en cada render
+  // Esto evita que el useEffect se ejecute en loop infinito
+  const handleApiError = useCallback((err) => {
     if (err.message === "UNAUTHORIZED") {
       // Token expirado — deslogueamos y React Router redirige al login
       logout();
@@ -27,20 +28,26 @@ function TasksPage() {
       return;
     }
     setError(err.message);
-  };
+  }, [logout, navigate]); 
 
-  const loadTasks = async () => {
-    try {
-      setLoading(true);
-      const data = await getTasks(token);
-      setTasks(data.content);
-    } catch (err) {
-      handleApiError(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 4. Efectos
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        setLoading(true);
+        const data = await getTasks(token);
+        setTasks(data.content);
+      } catch (err) {
+        handleApiError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    loadTasks();
+  }, [token, handleApiError]);
+
+  // 5. Handlers de eventos
   const handleCreate = async () => {
     if (!title.trim()) {
       setError("El título es obligatorio");
@@ -79,11 +86,12 @@ function TasksPage() {
     }
   };
 
-  // Contadores para las stats
+  // Variables derivadas
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((t) => t.completed).length;
   const pendingTasks = totalTasks - completedTasks;
 
+  // 6. JSX
   return (
     <div className="tasks-wrapper">
 

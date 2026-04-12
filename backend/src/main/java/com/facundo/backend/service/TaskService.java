@@ -1,7 +1,5 @@
 package com.facundo.backend.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,16 +32,6 @@ public class TaskService {
             saved.getDescription(),
             saved.getCompleted()
         );
-    }
-
-    public List<TaskResponseDTO> getUserTasks(String userEmail) {
-        return taskRepository.findByUserEmail(userEmail)
-        .stream().map(task -> new TaskResponseDTO(
-            task.getId(),
-            task.getTitle(),
-            task.getDescription(),
-            task.getCompleted()
-        )).toList();
     }
     
     public TaskResponseDTO updateTask(Long id, TaskRequestDTO dto, String userEmail) {
