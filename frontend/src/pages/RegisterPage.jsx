@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register as registerService } from "../services/api";
+import "./AuthPage.css";
 
 function RegisterPage() {
     const [username, setUsername] = useState("");
@@ -43,46 +44,54 @@ function RegisterPage() {
     };
 
     return (
-        <div style={{ maxWidth: "400px", margin: "80px auto", padding: "24px" }}>
-            <h2>Crear cuenta</h2>
+        <div className="auth-wrapper">
+            <div className="auth-card card">
 
-            <input
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                style={{ display: "block", width: "100%", marginBottom: "8px", padding: "8px", boxSizing: "border-box" }}
-            />
+                <div className="auth-header">
+                    <div className="auth-icon">+</div>
+                    <h1>Crear cuenta</h1>
+                    <p>Empezá a organizar tus tareas hoy</p>
+                </div>
 
-            <input
-                placeholder="Email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ display: "block", width: "100%", marginBottom: "8px", padding: "8px", boxSizing: "border-box" }}
-            />
+                <div className="auth-form">
+                    <input
+                        className="input"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
 
-            <input
-                placeholder="Contraseña (mínimo 6 caracteres)"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ display: "block", width: "100%", marginBottom: "12px", padding: "8px", boxSizing: "border-box" }}
-            />
+                    <input
+                        className="input"
+                        placeholder="Email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
 
-            {error && <p style={{ color: "red", marginBottom: "12px" }}>{error}</p>}
+                    <input
+                        className="input"
+                        placeholder="Contraseña (mínimo 6 caracteres)"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
 
-            <button
-                onClick={handleRegister}
-                disabled={loading}
-                style={{ width: "100%", padding: "10px", marginBottom: "12px" }}
-            >
-                {loading ? "Creando cuenta..." : "Registrarse"}
-            </button>
+                    {error && <p className="msg-error">{error}</p>}
 
-            {/* Link para ir al login si ya tenés cuenta */}
-            <p style={{ textAlign: "center", color: "#666" }}>
+                    <button
+                        className="btn-primary"
+                        onClick={handleRegister}
+                        disabled={loading}
+                    >
+                        {loading ? "Creando cuenta..." : "Registrarse"}
+                    </button>
+                </div>
+
+                <div className="auth-footer">
                 ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
-            </p>
+                </div>
+            </div>
         </div>
     );
 }
